@@ -3,8 +3,6 @@ from typing import List
 import os,sys
 import torch
 from config.LCQOConfig import Config as LCQOConfig
-import LCQO,util
-sys.modules['LQO'] = util
 config  = LCQOConfig()
 
 class Node:

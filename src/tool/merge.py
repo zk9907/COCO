@@ -133,8 +133,8 @@ def get_additional_info(metaInfo):
             #     table['columnIdx'][table_idx][column_idx] = idx
             # column_idx += 1
     column['meta'] = np.array([np.zeros(len(column['meta'][0]), dtype=np.int8)] + column['meta'])
-    print(column['meta'][-1])
-    print(len(column['meta']))
+    # print(column['meta'][-1])
+    # print(len(column['meta']))
     # print(column['meta'][1])
     # meta_data = np.array(column['meta'][1:], dtype=np.float64)
     # meta_data = np.nan_to_num(meta_data, nan=0.0)

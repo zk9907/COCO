@@ -40,7 +40,7 @@ def set_seed(seed):
         torch.backends.cudnn.deterministic = True
 
 class Trainer:
-    def __init__(self, seed = 1408):
+    def __init__(self, seed = 1408, warm_up = False):
         set_seed(seed)
         self.seed = seed
         self.lcqo_config = LCQOConfig()
@@ -82,10 +82,12 @@ class Trainer:
         self.iteration_count = 0
         self.generated_sql_counts = {db: {} for db in self.train_databases}
         self.executed_sql_counts = {db: 0 for db in self.train_databases}
+        if warm_up:
+            self.initialize_from_random_workload(GenConfig.warmup_workloads_path)
 
     def initialize_from_random_workload(self, path):
         if os.path.exists(path):
-            self.sql_buffer.load_state(path, sample_size = 10)
+            self.sql_buffer.load_state(path)
             for sql in self.sql_buffer.buffer:
                 sql:SQL
                 self.training_samples[sql.id] = self.lcqo_agent._collect_experiences_for_query(sql)
@@ -489,7 +491,6 @@ class Trainer:
         self.writer.add_scalar(f'Test/Loss/All', result[0], self.iteration_count)
         self.logger.info(f"total_lcqo_latency={total_lcqo_latency / 1000:.2f}, total_base_latency={sum(self.test_info[dbName]['base_latency'] for dbName in self.test_info) / 1000:.2f}, total_min_latency={sum(self.test_info[dbName]['min_latency'] for dbName in self.test_info) / 1000:.2f}, total_q_min_latency={sum(self.test_info[dbName]['q_min_latency'] for dbName in self.test_info) / 1000:.2f}")
 if __name__ == "__main__":
-    trainer = Trainer(seed = 9999)
-    trainer.initialize_from_random_workload('/home/zhongkai/pywork/SuperCOCO/TestWorkload/sql_buffer.pkl')
+    trainer = Trainer(seed = 9999, warm_up = True)
     while True:
         trainer.iterate_one_loop(25)
